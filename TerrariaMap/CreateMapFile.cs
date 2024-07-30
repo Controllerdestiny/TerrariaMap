@@ -10,8 +10,6 @@ internal class CreateMapFile
 {
     public static readonly CreateMapFile Instance = new();
 
-    public bool Status { get; private set; } = false;
-
     private WorldMap WorldMap { get; set; }
 
     private CreateMapFile()
@@ -36,7 +34,6 @@ internal class CreateMapFile
 
     public MapInfo Start(byte[] buffer)
     {
-        Status = true;
         WorldGen.clearWorld();
         var reader = new BinaryReader(new MemoryStream(buffer));
         reader.ReadInt32();
@@ -52,7 +49,6 @@ internal class CreateMapFile
             }
         }
         var res = InternalSaveMap();
-        Status = false;
         return res;
     }
 

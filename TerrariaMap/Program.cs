@@ -1,21 +1,60 @@
 ﻿
+using System.IO.MemoryMappedFiles;
+
 namespace TerrariaMap;
 class Program
 {
     static void Main(string[] args)
-    { 
-        Console.WriteLine("请输入一个地图路径:");
-        var path = Console.ReadLine();
-        if(!File.Exists(path))
-            throw new FileNotFoundException("找不到指令路径的地图文件!");
-        Console.WriteLine("初始化中..");
+    {
         CreateMapFile.Instance.Init();
-        Console.WriteLine("解析地图内容..");
-        var info = CreateMapFile.Instance.Start(File.ReadAllBytes(path));
-        Console.WriteLine("写入文件...");
-        File.WriteAllBytes(info.Name,info.Buffer);
-        Console.WriteLine($"小地图生成成功:{info.Name}");
-    }
+        var param = ParseArguements(Environment.GetCommandLineArgs());
+		var name = param["-mapname"];
+		//var res = CreateMapFile.Instance.Start(File.ReadAllBytes("地图.wld"));
+		//File.WriteAllBytes(res.Name, res.Buffer);
+		IPC.Start(name);
+	}
+
+    
+ 
+
+    public static Dictionary<string, string> ParseArguements(string[] args)
+	{
+		string text = null;
+		string text2 = "";
+		Dictionary<string, string> dictionary = new Dictionary<string, string>();
+		for (int i = 0; i < args.Length; i++)
+		{
+			if (args[i].Length == 0)
+			{
+				continue;
+			}
+			if (args[i][0] == '-' || args[i][0] == '+')
+			{
+				if (text != null)
+				{
+					dictionary.Add(text.ToLower(), text2);
+					text2 = "";
+				}
+				text = args[i];
+				text2 = "";
+			}
+			else
+			{
+				if (text2 != "")
+				{
+					text2 += " ";
+				}
+				text2 += args[i];
+			}
+		}
+		if (text != null)
+		{
+			dictionary.Add(text.ToLower(), text2);
+			text2 = "";
+		}
+		return dictionary;
+	}
+
 
 }
 
