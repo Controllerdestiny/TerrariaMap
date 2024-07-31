@@ -53,7 +53,7 @@ jobs:
           name: "最新版本"
           body: "# 始终最新"
           artifacts: |
-            ./bin/*
+            TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
           allowUpdates: true
           removeArtifacts: true
       
