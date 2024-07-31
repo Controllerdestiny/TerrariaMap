@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TerrariaMap_${{ matrix.runtimeIdentifier }}
-          path: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
+          path: ./tempBinary/TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
           
   LatestRelease:
     name: 发布插件
@@ -64,7 +64,7 @@ jobs:
       - name: 下载临时插件包
         uses: actions/download-artifact@v4
         with:
-          path: ./bin
+          path: ./tempBinary
       - name: 发布插件包
         uses: ncipollo/release-action@v1
         with:
@@ -72,7 +72,7 @@ jobs:
           name: "最新版本"
           body: ""
           artifacts: |
-            ./bin/*
+            ./tempBinary/*
           allowUpdates: true
           removeArtifacts: true
               
