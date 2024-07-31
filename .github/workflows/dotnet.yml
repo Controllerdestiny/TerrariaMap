@@ -1,98 +1,59 @@
-name: 插件发布
+name: Publish Release
 
 on:
   push:
-    branches: [ "master","cai"]
-    
+    branches:
+      - master
+
 jobs:
-  Build:
+  build-and-publish:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
 
-    name: 构建应用
     steps:
-      - uses: actions/checkout@v4
-        with:
-           submodules: 'recursive'
-           
-      - name: 初始化.NET 8
-        uses: actions/setup-dotnet@v4
-        env:
-          DOTNET_CLI_UI_LANGUAGE: zh-CN
-        with:
-          dotnet-version: 8.0.x
-          
-      - name: 编译
-        run: |
-          dotnet publish TerrariaMap/TerrariaMap.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
+    - name: Checkout code
+      uses: actions/checkout@v2
 
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x' # 使用你想要的 .NET Core 版本
 
+    - name: Restore NuGet packages
+      run: dotnet restore
 
-      - name: 上传二进制文件(${{ matrix.runtimeIdentifier }}) for .NET 8.0
-        uses: actions/upload-artifact@v3
-        with:
-          name: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0
-          path: TerrariaMap/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+    - name: Build project
+      run: dotnet build --configuration Release
 
-      - name: 安装 zip
-        run: sudo apt-get install zip
-        
-      - name: 打包
-        run: zip -r TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip TerrariaMap/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish/
+    - name: Publish for ${{ matrix.runtimeIdentifier }}
+      run: dotnet publish TerrariaMap/TerrariaMap.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
       
-      - name: 上传临时包
-        uses: actions/upload-artifact@v4
-        with:
-          name: TerrariaMap_all
-          path: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0
+        path: |
+          TerrariaMap/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
 
-  LatestRelease:
-    name: 发布插件
+  create-release:
+    needs: build-and-publish
     runs-on: ubuntu-latest
-    needs: Build
-    permissions:
-         contents: write
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-          
-      - name: 更新发布标签
-        run: |
-          git tag -f V1.0.0.0
-          git push -f origin V1.0.0.0
-      - name: 下载临时插件包
-        uses: actions/download-artifact@v4
-        with:
-          name: TerrariaMap_all
-          path: ./bin
-      - name: 发布插件包
-        uses: ncipollo/release-action@v1
-        with:
-          tag: V1.0.0.0
-          name: "最新版本"
-          body: ""
-          artifacts: |
-            ./bin/*
-          allowUpdates: true
-          removeArtifacts: true
-          
-      
-         
-  ClearTempArtifacts:
-    name: 清理临时文件
-    if: always()
-    runs-on: ubuntu-latest
-    needs:
-      - LatestRelease
-    permissions:
-      actions: write
-    steps:
-      - uses: geekyeggo/delete-artifact@v5
-        with:
-          name: |
-            TerrariaMap_all
+    - name: Download all artifacts
+      uses: actions/download-artifact@v2
+      with:
+        path: artifacts
+
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: v1.0.0 # 设置你的版本号
+        name: Release v1.0.0 # 设置你的发布名称
+        body: |
+          This is the first release of my project.
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: "artifacts/**/*" # 指定要上传的工件路径
