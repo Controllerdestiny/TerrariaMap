@@ -46,7 +46,7 @@ jobs:
           name: TerrariaMap_all
           path: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
 
-    NightlyRelease:
+  NightlyRelease:
     name: Nightly Release
     runs-on: ubuntu-latest
     needs: Build
