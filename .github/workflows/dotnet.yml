@@ -45,51 +45,48 @@ jobs:
         with:
           name: TerrariaMap_all
           path: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
-      
-      
-      
-         
-  LatestRelease:
-    name: 发布插件
+
+      NightlyRelease:
+    name: Nightly Release
     runs-on: ubuntu-latest
     needs: Build
     permissions:
-         contents: write
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
-      - name: 更新发布标签
+      - name: Update Nightly Tag
+        id: pa
         run: |
-          git tag -f V1.0.0.0
-          git push -f origin V1.0.0.0
-      - name: 下载临时插件包
-        uses: actions/download-artifact@v4
+           echo "TAG_NAME=V$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
         with:
           name: TerrariaMap_all
           path: ./bin
-      - name: 发布插件包
+      - name: Update Nightly Release
         uses: ncipollo/release-action@v1
         with:
-          tag: V1.0.0.0
-          name: "最新版本"
-          body: ""
+          tag: V9999
+          name: V9999
+          prerelease: false
+          body: '发布版本'
           artifacts: |
             ./bin/*
           allowUpdates: true
           removeArtifacts: true
-                   
+  
   ClearTempArtifacts:
-    name: 清理临时文件
+    name: Clear Temp Artifacts
     if: always()
     runs-on: ubuntu-latest
     needs:
-      - LatestRelease
+      - NightlyRelease
     permissions:
       actions: write
     steps:
-      - uses: geekyeggo/delete-artifact@v5
+      - uses: geekyeggo/delete-artifact@v2
         with:
           name: |
-            TerrariaMap
+            TerrariaMap_all
