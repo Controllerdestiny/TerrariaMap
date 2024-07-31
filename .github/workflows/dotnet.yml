@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TerrariaMap_${{ matrix.runtimeIdentifier }}
-          path: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
+          path: tempBinary/TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
           
   LatestRelease:
     name: 发布插件
@@ -74,7 +74,7 @@ jobs:
           name: "最新版本"
           body: ""
           artifacts: |
-            /tempBinary/*
+            ./tempBinary
           allowUpdates: true
           removeArtifacts: true
           
