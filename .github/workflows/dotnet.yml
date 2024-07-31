@@ -67,11 +67,6 @@ jobs:
         run: |
           git tag -f V1.0.0.0
           git push -f origin V1.0.0.0
-      - name: 下载临时插件包
-        uses: actions/download-artifact@v4
-        with:
-          name: TerrariaMap_all
-          path: ./bin
       - name: 发布插件包
         uses: ncipollo/release-action@v1
         with:
@@ -79,7 +74,7 @@ jobs:
           name: "最新版本"
           body: ""
           artifacts: |
-            ./bin/*
+            ./tempBinary/*
           allowUpdates: true
           removeArtifacts: true
           
