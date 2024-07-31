@@ -72,7 +72,7 @@ jobs:
           name: "最新版本"
           body: ""
           artifacts: |
-            ./tempBinary/*
+            ./bin/*
           allowUpdates: true
           removeArtifacts: true
               
