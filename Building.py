@@ -18,3 +18,5 @@ if __name__ == '__main__':
     print(build_name)
     directory_path = "TerrariaMap/bin/Release/net8.0/" + build_name + "/publish/"
     zip_files_in_folder(directory_path + build_name, "TerrariaMap_" + build_name + "_8.0.zip")
+    os.mkdir(tempBinary);
+    shutil.move("TerrariaMap_" + build_name + "_8.0.zip", "tempBinary/" + "TerrariaMap_" + build_name + "_8.0.zip")
