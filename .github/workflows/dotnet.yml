@@ -22,7 +22,7 @@ jobs:
           
       - name: 编译。
         run: |
-          dotnet publish TerrariaMap --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
+          dotnet publish TerrariaMap/TerrariaMap.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
 
       - name: 上传二进制(${{ matrix.runtimeIdentifier }})
         uses: actions/upload-artifact@v3
@@ -41,11 +41,11 @@ jobs:
         env:
           PYTHONIOENCODING: 'utf-8'
       
-      - name: 上传临时插件包
-        uses: actions/upload-artifact@v4
+      - name: 上传发布文件
+        uses: actions/upload-artifact@v3
         with:
-          name: Plugins
-          path: Plugins.zip
+          name: TerrariaMap_all
+          path: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
           
   LatestRelease:
     name: 发布插件
@@ -65,7 +65,7 @@ jobs:
       - name: 下载临时插件包
         uses: actions/download-artifact@v4
         with:
-          name: Plugins
+          name: TerrariaMap_all
           path: ./bin
       - name: 发布插件包
         uses: ncipollo/release-action@v1
@@ -92,4 +92,4 @@ jobs:
       - uses: geekyeggo/delete-artifact@v5
         with:
           name: |
-            Plugins
+            TerrariaMap_all
