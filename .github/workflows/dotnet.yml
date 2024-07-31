@@ -36,7 +36,7 @@ jobs:
 
       - name: 打包
         run: 
-          sudo python Building.py TerrariaMap${{ matrix.runtimeIdentifier }}
+          sudo python Building.py ${{ matrix.runtimeIdentifier }}
         env:
           PYTHONIOENCODING: 'utf-8'
       
