@@ -62,8 +62,6 @@ jobs:
     name: 清理临时文件
     if: always()
     runs-on: ubuntu-latest
-    needs:
-      - LatestRelease
     permissions:
       actions: write
     steps:
