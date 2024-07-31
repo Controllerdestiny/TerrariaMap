@@ -1,0 +1,95 @@
+name: 插件发布
+
+on:
+  push:
+    branches: [ "master","cai"]
+    
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
+
+    name: 构建应用
+    steps:
+      - uses: actions/checkout@v4
+        with:
+           submodules: 'recursive'
+           
+      - name: 初始化.NET 8
+        uses: actions/setup-dotnet@v4
+        env:
+          DOTNET_CLI_UI_LANGUAGE: zh-CN
+        with:
+          dotnet-version: 8.0.x
+          
+      - name: 构建插件
+        run: |
+          dotnet publish TerrariaMap/TerrariaMap.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
+                
+      - name: 初始化Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: 打包
+        run: 
+          sudo python Building.py ${{ matrix.runtimeIdentifier }}
+        env:
+          PYTHONIOENCODING: 'utf-8'
+      
+      - name: 上传临时插件包
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.runtimeIdentifier }}
+          path: ${{ matrix.runtimeIdentifier }}.zip
+          
+  LatestRelease:
+    name: 发布插件
+    runs-on: ubuntu-latest
+    needs: Build
+    permissions:
+         contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+          
+      - name: 更新发布标签
+        run: |
+          git tag -f V1.0.0.0
+          git push -f origin V1.0.0.0
+      - name: 下载临时插件包
+        uses: actions/download-artifact@v4
+        with:
+          name: Plugins
+          path: ./bin
+      - name: 发布插件包
+        uses: ncipollo/release-action@v1
+        with:
+          tag: V1.0.0.0
+          name: "最新版本"
+          body: "# 始终最新"
+          artifacts: |
+            ./bin/*
+          allowUpdates: true
+          removeArtifacts: true
+          
+      
+         
+  ClearTempArtifacts:
+    name: 清理临时文件
+    if: always()
+    runs-on: ubuntu-latest
+    needs:
+      - LatestRelease
+    permissions:
+      actions: write
+    steps:
+      - uses: geekyeggo/delete-artifact@v5
+        with:
+          name: |
+            Plugins
