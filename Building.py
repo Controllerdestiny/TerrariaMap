@@ -17,4 +17,4 @@ if __name__ == '__main__':
     build_name = sys.argv[1]
     print(build_name)
     directory_path = "TerrariaMap/bin/Release/net8.0/publish/"
-    zip_files_in_folder(directory_path + build_name, "TerrariaMap_" + build_name + "8.0.zip")
+    zip_files_in_folder(directory_path + build_name, "TerrariaMap_" + build_name + "_8.0.zip")
