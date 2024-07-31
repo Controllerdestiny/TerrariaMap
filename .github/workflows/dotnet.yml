@@ -13,7 +13,7 @@ jobs:
         runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
       
     steps:           
-      - name: 初始化.NET 6
+      - name: 初始化.NET 8
         uses: actions/setup-dotnet@v4
         env:
           DOTNET_CLI_UI_LANGUAGE: zh-CN
