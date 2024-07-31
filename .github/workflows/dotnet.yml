@@ -1,4 +1,4 @@
-name: 插件发布
+name: 发布
 
 on:
   push:
