@@ -17,6 +17,7 @@ if __name__ == '__main__':
     build_name = sys.argv[1]
     print(build_name)
     directory_path = "TerrariaMap/bin/Release/net8.0/" + build_name + "/publish/"
-    zip_files_in_folder(directory_path + build_name, "TerrariaMap_" + build_name + "_8.0.zip")
+    print(os.path.exists(directory_path))
+    zip_files_in_folder(directory_path, "TerrariaMap_" + build_name + "_8.0.zip")
     ##os.mkdir("tempBinary");
     ##shutil.move("TerrariaMap_" + build_name + "_8.0.zip", "tempBinary/" + "TerrariaMap_" + build_name + "_8.0.zip")
