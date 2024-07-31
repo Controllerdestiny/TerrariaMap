@@ -28,17 +28,12 @@ jobs:
       - name: 编译
         run: |
           dotnet publish TerrariaMap/TerrariaMap.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
-                
-      - name: 初始化Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
 
+      - name: 安装 zip
+        run: sudo apt-get install zip
+        
       - name: 打包
-        run: 
-          sudo python Building.py ${{ matrix.runtimeIdentifier }}
-        env:
-          PYTHONIOENCODING: 'utf-8'
+        run: zip -r TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip TerrariaMap/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish/
       
       - name: 上传临时包
         uses: actions/upload-artifact@v4
