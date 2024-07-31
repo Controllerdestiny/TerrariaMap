@@ -2,7 +2,7 @@ name: 插件发布
 
 on:
   push:
-    branches: [ "master","cai"]
+    branches: [ "master"]
     
 jobs:
   Build:
@@ -29,25 +29,20 @@ jobs:
         run: |
           dotnet publish TerrariaMap/TerrariaMap.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
           
-      - name: 初始化Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      - name: 安装 zip
+        run: sudo apt-get install zip
 
-      - name: 打包
-        run: 
-          sudo python Building.py ${{ matrix.runtimeIdentifier }}
-        env:
-          PYTHONIOENCODING: 'utf-8'
+      - name: 生成压缩包
+        run: zip -r TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip TerrariaMap\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish
       
-      - name: 上传临时插件包
+      - name: 上传临时文件
         uses: actions/upload-artifact@v3
         with:
           name: Artifacts
           path: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
           
   LatestRelease:
-    name: 发布插件
+    name: 发布
     runs-on: ubuntu-latest
     needs: Build
     permissions:
@@ -61,12 +56,12 @@ jobs:
         run: |
           git tag -f V1.0.0.0
           git push -f origin V1.0.0.0
-      - name: 下载临时插件包
+      - name: 下载临时插文件
         uses: actions/download-artifact@v3
         with:
           name: Artifacts
           path: ./bin
-      - name: 发布插件包
+      - name: 发布Release
         uses: ncipollo/release-action@v1
         with:
           tag: V1.0.0.0
