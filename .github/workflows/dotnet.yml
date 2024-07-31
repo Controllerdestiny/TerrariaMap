@@ -23,7 +23,7 @@ jobs:
       - name: 编译。
         run: |
           dotnet publish TerrariaMap/TerrariaMap.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
-
+          
       - name: 上传二进制(${{ matrix.runtimeIdentifier }})
         uses: actions/upload-artifact@v3
         with:
