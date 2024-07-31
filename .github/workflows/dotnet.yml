@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TerrariaMap_all
-          path: TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
+          path: TerrariaMap/bin/Release/net8.0/publish/TerrariaMap_${{ matrix.runtimeIdentifier }}_8.0.zip
 
   NightlyRelease:
     name: Nightly Release
