@@ -36,15 +36,15 @@ jobs:
 
       - name: 打包
         run: 
-          sudo python Building.py ${{ matrix.runtimeIdentifier }}
+          sudo python Building.py TerrariaMap${{ matrix.runtimeIdentifier }}
         env:
           PYTHONIOENCODING: 'utf-8'
       
       - name: 上传临时插件包
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.runtimeIdentifier }}
-          path: ${{ matrix.runtimeIdentifier }}.zip
+          name: TerrariaMap${{ matrix.runtimeIdentifier }}
+          path: TerrariaMap${{ matrix.runtimeIdentifier }}.zip
           
   LatestRelease:
     name: 发布插件
